@@ -2,7 +2,7 @@
 
 #common parameters
 #support: 1 imu 1 cam; 1 imu 2 cam: 2 cam; 
-imu: 0         
+imu: 0        
 num_of_cam: 2  
 
 imu_topic: "/airsim_node/drone_1/imu/imu"
@@ -20,23 +20,23 @@ image_height: 480
 estimate_extrinsic: 0   # 0  Have an accurate extrinsic parameters. We will trust the following imu^R_cam, imu^T_cam, don't change it.
                         # 1  Have an initial guess about extrinsic parameters. We will optimize around your initial guess.
 
+#change 
 body_T_cam0: !!opencv-matrix
   rows: 4
   cols: 4
   dt: d
   data: [0, 0, 1, 0.26,
-        1, 0, 0, -0.0475,
-        0, 1, 0, 0.0, 
+        -1, 0, 0, 0.0475 ,
+        0, -1, 0, 0.0, 
         0., 0., 0., 1 ]
-
 
 body_T_cam1: !!opencv-matrix
   rows: 4
   cols: 4
   dt: d
   data: [0, 0, 1, 0.26,
-        1, 0, 0, 0.0475,
-        0, 1, 0, 0.0, 
+        -1, 0, 0, -0.0475 ,
+        0, -1, 0, 0.0, 
         0., 0., 0., 1 ]
 
 #Multiple thread support
