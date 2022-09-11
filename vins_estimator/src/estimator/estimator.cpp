@@ -360,7 +360,13 @@ void Estimator::initFirstIMUPose(vector<pair<double, Eigen::Vector3d>> &accVecto
     R0 = Utility::ypr2R(Eigen::Vector3d{-yaw, 0, 0}) * R0;
     Rs[0] = R0;
     cout << "init R0 " << endl << Rs[0] << endl;
-    //Vs[0] = Vector3d(5, 0, 0);
+    // transform to FLU
+    Matrix3d R_w1_w2;
+    R_w1_w2 << 1.0000000, 0.0000000, 0.0000000,
+        0.0000000, 1.0000000, 0.0000000,
+        0.0000000, 0.0000000, 1.0000000;
+    R0 = R_w1_w2 * R0;
+    // Vs[0] = Vector3d(5, 0, 0);
 }
 
 void Estimator::initFirstPose(Eigen::Vector3d p, Eigen::Matrix3d r)
