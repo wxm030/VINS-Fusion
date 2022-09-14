@@ -8,7 +8,7 @@ num_of_cam: 2
 imu_topic: "/airsim_node/drone_1/imu/imu"
 image0_topic: "/airsim_node/drone_1/front_left/Scene"
 image1_topic: "/airsim_node/drone_1/front_right/Scene"
-output_path: "/home/wxm/Documents/codes/catkin_ws_VINS_Fusion/data/test_result"
+output_path: "/mnt/disk2/codes/catkin_ws_uav_challange/src/VINS-Fusion/data/test_result"
 
 cam0_calib: "cam0_pinhole.yaml"
 cam1_calib: "cam1_pinhole.yaml"
@@ -18,25 +18,22 @@ image_height: 480
 
 # Extrinsic parameter between IMU and Camera.
 estimate_extrinsic: 0   # 0  Have an accurate extrinsic parameters. We will trust the following imu^R_cam, imu^T_cam, don't change it.
-                        # 1  Have an initial guess about extrinsic parameters. We will optimize around your initial guess.
-
-#change 
+                        # 1  Have an initial guess about extrinsic parameters. We will optimize around your initial guess. 
 body_T_cam0: !!opencv-matrix
   rows: 4
   cols: 4
   dt: d
-  data: [0, 0, 1, 0.26,
-        -1, 0, 0, 0.0475 ,
-        0, -1, 0, 0.0, 
+  data: [0, 0, 1, 0.52,
+        1, 0, 0, -0.0475,
+        0, 1, 0, 0.0, 
         0., 0., 0., 1 ]
-
 body_T_cam1: !!opencv-matrix
   rows: 4
   cols: 4
   dt: d
-  data: [0, 0, 1, 0.26,
-        -1, 0, 0, -0.0475 ,
-        0, -1, 0, 0.0, 
+  data: [0, 0, 1, 0.52,
+        1, 0, 0, 0.0475,
+        0, 1, 0, 0.0, 
         0., 0., 0., 1 ]
 
 #Multiple thread support

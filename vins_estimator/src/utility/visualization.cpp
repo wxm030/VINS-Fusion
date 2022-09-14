@@ -11,7 +11,7 @@
 
 using namespace ros;
 using namespace Eigen;
-ros::Publisher pub_odometry, pub_latest_odometry;
+ros::Publisher pub_odometry, pub_latest_odometry, pub_odometry_flu;
 ros::Publisher pub_path;
 ros::Publisher pub_point_cloud, pub_margin_cloud;
 ros::Publisher pub_key_poses;
@@ -36,6 +36,7 @@ void registerPub(ros::NodeHandle &n)
     pub_latest_odometry = n.advertise<nav_msgs::Odometry>("imu_propagate", 1000);
     pub_path = n.advertise<nav_msgs::Path>("path", 1000);
     pub_odometry = n.advertise<nav_msgs::Odometry>("odometry", 1000);
+    pub_odometry_flu= n.advertise<nav_msgs::Odometry>("odometry_flu", 1000);
     pub_point_cloud = n.advertise<sensor_msgs::PointCloud>("point_cloud", 1000);
     pub_margin_cloud = n.advertise<sensor_msgs::PointCloud>("margin_cloud", 1000);
     pub_key_poses = n.advertise<visualization_msgs::Marker>("key_poses", 1000);
@@ -45,6 +46,7 @@ void registerPub(ros::NodeHandle &n)
     pub_keyframe_point = n.advertise<sensor_msgs::PointCloud>("keyframe_point", 1000);
     pub_extrinsic = n.advertise<nav_msgs::Odometry>("extrinsic", 1000);
     pub_image_track = n.advertise<sensor_msgs::Image>("image_track", 1000);
+
 
     cameraposevisual.setScale(0.1);
     cameraposevisual.setLineWidth(0.01);
@@ -142,6 +144,28 @@ void pubOdometry(const Estimator &estimator, const std_msgs::Header &header)
         odometry.twist.twist.linear.y = estimator.Vs[WINDOW_SIZE].y();
         odometry.twist.twist.linear.z = estimator.Vs[WINDOW_SIZE].z();
         pub_odometry.publish(odometry);
+        //FRD to FLU
+        nav_msgs::Odometry flu_odometry;
+        odometry.header = header;
+        odometry.header.frame_id = "world";
+        odometry.child_frame_id = "world";
+        Quaterniond tmp_Q_flu;
+        Eigen::Matrix3d R_w1_w2;
+        R_w1_w2 << 1, 0,  0,
+        0, -1,  0,
+        0,  0,  -1;
+        tmp_Q_flu = Quaterniond(R_w1_w2 * estimator.Rs[WINDOW_SIZE]);
+        flu_odometry.pose.pose.position.x = estimator.Ps[WINDOW_SIZE].x();
+        flu_odometry.pose.pose.position.y = estimator.Ps[WINDOW_SIZE].y();
+        flu_odometry.pose.pose.position.z = estimator.Ps[WINDOW_SIZE].z();
+        flu_odometry.pose.pose.orientation.x = tmp_Q_flu.x();
+        flu_odometry.pose.pose.orientation.y = tmp_Q_flu.y();
+        flu_odometry.pose.pose.orientation.z = tmp_Q_flu.z();
+        flu_odometry.pose.pose.orientation.w = tmp_Q_flu.w();
+        flu_odometry.twist.twist.linear.x = estimator.Vs[WINDOW_SIZE].x();
+        flu_odometry.twist.twist.linear.y = estimator.Vs[WINDOW_SIZE].y();
+        flu_odometry.twist.twist.linear.z = estimator.Vs[WINDOW_SIZE].z();
+        pub_odometry_flu.publish(flu_odometry);
 
         geometry_msgs::PoseStamped pose_stamped;
         pose_stamped.header = header;
